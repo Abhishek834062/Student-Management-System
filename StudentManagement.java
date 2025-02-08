@@ -1,11 +1,12 @@
+import java.util.ArrayList;
 import java.util.Scanner;
-class student
+class Student
 {
   int studentId;
   String name,gender,course,EmailId,phone;
   int age;
   
-    public student(int studentId,String name,int age,String gender,String course,String EmailId,String phone)
+    public Student(int studentId,String name,int age,String gender,String course,String EmailId,String phone)
     {
       this.studentId=studentId;
       this.name=name;
@@ -23,7 +24,7 @@ class student
      
   
   
-    public static student addStudent()
+    public static Student addStudent()
     {
       int id,age;
       String name,gender,course,email,phone;
@@ -43,12 +44,15 @@ class student
        email=sc.next();
        System.out.println("Enter the phone number of Student");
        phone=sc.next();
-       student s1=new student(id,name,age,gender,course,email,phone);
+       Student s1=new Student(id,name,age,gender,course,email,phone);
 
        return s1;
   }
-  public static void viewStudent(student s1)
+  public static void viewStudent(ArrayList<Student> studentList)
   {
+
+        for(Student s1:studentList)
+        {
             System.out.println(
                   "Student Id :"+s1.studentId+
                   "\n Name :"+s1.name+
@@ -56,15 +60,42 @@ class student
                   "\n Gender :"+s1.gender+
                   "\n course :"+s1.course+
                   "\n Email id :"+s1.EmailId+
-                  "phone :"+s1.phone
+                  "\n phone :"+s1.phone+"\n"
 
             );
   }
-
+  }
   public static void main(String[] args)
   {
-   student s1= addStudent();
-    viewStudent(s1);
+    ArrayList<Student> studentList=new ArrayList<Student>();
+    
+
+      stop:
+     while(true)
+     {
+
+      System.out.println("""
+      1 AddStudent in studentList 
+      2 view student List 
+      3 exist """);
+      System.out.print("Type input :");
+     int n=sc.nextInt();
+
+    switch (n) {
+      case 1:
+         studentList.add(addStudent());
+        break;
+     case 2:
+        viewStudent(studentList);
+        break;
+        case 3:
+            break stop;
+      
+      default:
+      System.out.println("Wrong input");
+        break;
+     }
+     }
     
   }
 }
