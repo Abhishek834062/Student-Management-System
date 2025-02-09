@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 class Student
@@ -29,6 +30,9 @@ class Student
       int id,age;
       String name,gender,course,email,phone;
   
+     try
+     {
+
        System.out.println("Enter the Student ID");
        id=sc.nextInt();
        System.out.println("Enter the name of Student");
@@ -44,6 +48,13 @@ class Student
        email=sc.next();
        System.out.println("Enter the phone number of Student");
        phone=sc.next();
+     }
+     catch(Exception e)
+     {
+      System.out.println("invalid input please Enter valid input");
+      sc.nextLine();
+      return null;
+     }
        Student s1=new Student(id,name,age,gender,course,email,phone);
 
        return s1;
@@ -73,14 +84,17 @@ class Student
       stop:
      while(true)
      {
-
-      System.out.println("""
-      1 AddStudent in studentList 
-      2 view student List 
-      3 exist """);
+        
+    
+      try
+      {
+        System.out.println("""
+          1 AddStudent in studentList 
+          2 view student List 
+          3 exist """);
       System.out.print("Type input :");
-     int n=sc.nextInt();
-
+      int n=sc.nextInt();
+     
     switch (n) {
       case 1:
          studentList.add(addStudent());
@@ -95,6 +109,12 @@ class Student
       System.out.println("Wrong input");
         break;
      }
+
+    }
+    catch (Exception e) {
+     System.out.println("wrong ,input only 1 ,2 or 3");
+     sc.nextLine();
+   }
      }
     
   }
