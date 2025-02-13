@@ -1,3 +1,8 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.InputMismatchException;
@@ -51,6 +56,11 @@ class Student {
         return phone;
     }
 
+    // object to string
+    public String toString() {
+        return studentId + "," + name + "," + age + "," + gender + "," + course + "," + emailId + "," + phone;
+    }
+
     // Method to print the details of the student
     public void printDetails() {
         System.out.println("Student ID: " + studentId);
@@ -76,6 +86,7 @@ public class StudentManagement {
         String email = getValidEmail();
         String phone = getValidPhone();
 
+        System.out.println("Student added Successfuly");
         return new Student(id, name, age, gender, course, email, phone);
     }
 
@@ -87,7 +98,8 @@ public class StudentManagement {
                 System.out.print("Enter the Student ID: ");
                 id = sc.nextInt();
                 sc.nextLine(); // Clear buffer
-                if (id <= 0) throw new IllegalArgumentException("Student ID must be a positive number.");
+                if (id <= 0)
+                    throw new IllegalArgumentException("Student ID must be a positive number.");
                 break;
             } catch (InputMismatchException e) {
                 System.out.println("Invalid input! Please enter a valid Student ID (only numbers).");
@@ -106,7 +118,8 @@ public class StudentManagement {
             try {
                 System.out.print("Enter the name of the Student: ");
                 name = sc.nextLine();
-                if (name.isEmpty()) throw new IllegalArgumentException("Name cannot be empty.");
+                if (name.isEmpty())
+                    throw new IllegalArgumentException("Name cannot be empty.");
                 break;
             } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());
@@ -123,7 +136,8 @@ public class StudentManagement {
                 System.out.print("Enter the age of the Student: ");
                 age = sc.nextInt();
                 sc.nextLine(); // Clear buffer
-                if (age <= 0) throw new IllegalArgumentException("Age must be a positive number.");
+                if (age <= 0)
+                    throw new IllegalArgumentException("Age must be a positive number.");
                 break;
             } catch (InputMismatchException e) {
                 System.out.println("Invalid input! Please enter a valid age.");
@@ -142,7 +156,8 @@ public class StudentManagement {
             try {
                 System.out.print("Enter the gender of the Student (Male/Female/Other): ");
                 gender = sc.nextLine().trim();
-                if (!gender.equalsIgnoreCase("Male") && !gender.equalsIgnoreCase("Female") && !gender.equalsIgnoreCase("Other")) {
+                if (!gender.equalsIgnoreCase("Male") && !gender.equalsIgnoreCase("Female")
+                        && !gender.equalsIgnoreCase("Other")) {
                     throw new IllegalArgumentException("Invalid gender! Please enter Male, Female or Other.");
                 }
                 break;
@@ -198,7 +213,9 @@ public class StudentManagement {
     // Method to display all students in the list
     private static void viewStudents(ArrayList<Student> studentList) {
         if (studentList.isEmpty()) {
+            System.out.println("----------------------------------");
             System.out.println("No students available.");
+            System.out.println("----------------------------------");
             return;
         }
         for (Student student : studentList) {
@@ -209,13 +226,14 @@ public class StudentManagement {
 
     // Main method to handle program flow
     public static void main(String[] args) {
-        ArrayList<Student> studentList = new ArrayList<>();
+        ArrayList<Student> studentList = fetchStudentData();
         while (true) {
             try {
                 System.out.println("""
                         1. Add Student
                         2. View Student List
-                        3. Exit
+                        3. Delete Student
+                        4. Exit
                         """);
                 System.out.print("Choose an option: ");
                 int choice = sc.nextInt();
@@ -224,21 +242,95 @@ public class StudentManagement {
                 switch (choice) {
                     case 1:
                         studentList.add(addStudent());
+                        saveStudentDataToFile(studentList);
+                        System.out.println("----------------------------------");
                         System.out.println("Student added successfully.");
+                        System.out.println("----------------------------------");
                         break;
                     case 2:
+
                         viewStudents(studentList);
                         break;
                     case 3:
+                        studentList = DeleteStudent(studentList);
+                        break;
+                    case 4:
                         System.out.println("Exiting the program. Goodbye!");
                         return;
                     default:
-                        System.out.println("Invalid option! Please choose 1, 2 or 3.");
+                        System.out.println("Invalid option! Please choose 1, 2 ,3 or 4.");
                 }
             } catch (Exception e) {
                 System.out.println("An error occurred. Please try again.");
                 sc.nextLine(); // Clear buffer
             }
         }
+
     }
+
+    private static void saveStudentDataToFile(ArrayList<Student> studentList) {
+
+        try {
+            FileWriter writer = new FileWriter("student.txt");
+
+            for (Student student : studentList) {
+                writer.write(student.toString() + "\n");
+            }
+            writer.close();
+
+        } catch (IOException e) {
+            System.out.println("An Error accured");
+            e.printStackTrace();
+        }
+
+    }
+
+    private static ArrayList<Student> fetchStudentData() {
+        ArrayList<Student> student = new ArrayList<>();
+
+        try (BufferedReader br = new BufferedReader(new FileReader("student.txt"))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split(",");
+                student.add(new Student(Integer.parseInt(data[0]), data[1], Integer.parseInt(data[2]), data[3], data[4],
+                        data[5], data[6]));
+
+            }
+        } catch (IOException e) {
+            System.out.println("No existing student data");
+        }
+
+        return student;
+    }
+
+    private static ArrayList<Student> DeleteStudent(ArrayList<Student> studentList)
+
+    {
+
+        int id = getValidStudentId();
+        boolean flag = true;
+
+        for (Student student : studentList) {
+            if (student.getStudentId() == id) {
+                studentList.remove(student);
+                System.out.println("----------------------------------------");
+                System.out.println("Student Deleted successfully");
+                System.out.println("----------------------------------------");
+                saveStudentDataToFile(studentList);
+                flag = false;
+                break;
+            }
+
+        }
+
+        if (flag) {
+            System.out.println("----------------------------------");
+            System.out.println("Student is not found");
+            System.out.println("----------------------------------");
+        }
+
+        return studentList;
+    }
+
+    
 }
